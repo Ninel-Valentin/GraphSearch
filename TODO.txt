@@ -1,0 +1,3 @@
+Read from keyboard / Read from file
+Modify data -> (open file with a+)
+Erase data (delete filename)
