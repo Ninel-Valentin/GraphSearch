@@ -30,7 +30,7 @@ bool GetQuestionAnswer(const char *question)
     // Repeat this step as long as the function does not return a value;
     while (true)
     {
-        char confirmation = getche();
+        char confirmation = getch();
         std::cout << std::endl
                   << std::flush;
 

@@ -4,8 +4,8 @@
 class loggingSystem
 {
 private:
-    bool clearLog;
-    bool debug;
+    bool clearLog = true;
+    bool debug = false;
 
 public:
 #pragma region Constructors prototypes
@@ -27,9 +27,6 @@ public:
 #pragma region Constructors definitions
 loggingSystem::loggingSystem()
 {
-    // Setting debug to false for default use-case
-    this->debug = false;
-
     std::cout << "Hello!" << std::endl;
 
     const char *q = "Would you like to erase the console after each message? (Y/N)";

@@ -5,18 +5,18 @@
 
 int main()
 {
+    // logging system initialization
     loggingSystem *log = new loggingSystem();
-    log->setDebug(false);
 
+    // menu tree initialization
     menu *mainMenu = menu::InstantiateMenu(log);
 
+    // main loop
     mainMenu->GetMenuCMD();
-
-    std::cout << "Press any key to close the console.";
-    getch();
 
     delete log;
     delete mainMenu;
+    std::cout << "Press any key to close the console.";
     getch();
     return 0;
 }

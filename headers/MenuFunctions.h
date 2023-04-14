@@ -50,13 +50,3 @@ void DefaultLocation()
     std::cout << "Default location"
               << std::endl;
 }
-void ToggleDebug()
-{
-    std::cout << "Toggle debug"
-              << std::endl;
-}
-void ToggleConsoleClear()
-{
-    std::cout << "Toggle console clear"
-              << std::endl;
-}

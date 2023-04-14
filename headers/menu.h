@@ -273,9 +273,9 @@ void menu::PutMenu()
     if (this->parent)
         std::cout << this->childrenSize
                   << ": "
-                  << std::string(paddingOfString(4, 3), ' ')
+                  << std::string(paddingOfString(4, 4), ' ')
                   << "Back"
-                  << std::string(paddingOfString(4, 3), ' ')
+                  << std::string(paddingOfString(4, 4), ' ')
                   << std::endl;
 
     std::cout
@@ -302,7 +302,7 @@ void menu::GetMenuCMD()
     this->PutMenu();
     while (true)
     {
-        char confirmation = getche();
+        char confirmation = getch();
         std::cout << std::endl
                   << std::flush;
 
@@ -388,10 +388,24 @@ void menu::ExecuteFunctionFromName()
         DefaultLocation();
         break;
     case Toggle_Debug:
-        ToggleDebug();
+        // Set the debug to the opposite value
+        this->log->setDebug(!this->log->getDebug());
+        std::cout << "Debugging log set to "
+                  << this->log->getDebug()
+                  << std::endl
+                  << "Press any key to continue..."
+                  << std::endl;
+        getch();
         break;
     case Toggle_console_clear:
-        ToggleConsoleClear();
+        // Set the console clear to the opposite value
+        this->log->setClearConsole(!this->log->getClearConsole());
+        std::cout << "Clear console set to "
+                  << this->log->getClearConsole()
+                  << std::endl
+                  << "Press any key to continue..."
+                  << std::endl;
+        getch();
         break;
     case Exit:
         exit(0);
