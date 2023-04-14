@@ -332,7 +332,7 @@ void menu::GetMenuCMD()
         {
             // Return to end this function and return to the previous loop (main loop of the parent menu)
             return;
-            break;
+            break; // Double check if required
         }
         // If the key ESC was pressed, close the program
         else if (confirmation == 27)
@@ -399,6 +399,7 @@ void menu::ExecuteFunctionFromName()
         std::cout << "Default type name encountered:"
                   << _nameSwatch[_nameString]
                   << std::endl;
+        getch();
     }
 }
 
