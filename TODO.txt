@@ -1,3 +1,6 @@
 Read from keyboard / Read from file
 Modify data -> (open file with a+)
 Erase data (delete filename)
+
+Add: Change source Node in menu
+Help menu

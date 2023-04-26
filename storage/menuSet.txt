@@ -1,6 +1,6 @@
 19
 Main menu>1|2|11|18|
-Start algorithm
+Start
 Graph data>3|4|5|10|12|
 Read data
 Display data
