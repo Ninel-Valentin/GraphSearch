@@ -11,6 +11,7 @@ int main()
 {
     // logging system initialization
     loggingSystem *log = new loggingSystem();
+    log->setDebug(true);
 
     // // menu tree initialization
     // menu *mainMenu = menu::InstantiateMenu(log);

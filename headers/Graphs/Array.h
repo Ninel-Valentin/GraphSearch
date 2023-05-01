@@ -21,11 +21,13 @@ public:
     int first();
     int last();
     int length();
+    void sort();
+    void sort(bool);
     void removeByValue(int);
     void removeByIndex(int);
     int &operator[](int);
-    bool operator!=(Array);
-    bool operator==(Array);
+    friend bool operator!=(const Array &, const Array &);
+    friend bool operator==(const Array &, const Array &);
     // friend std::istream &operator>>(std::istream &, Array &);
     // friend std::ostream &operator<<(std::ostream &, Array &);
 };
@@ -36,6 +38,8 @@ Array::Array(int _length)
     {
         this->values = new int[_length];
         this->len = _length;
+        for (int i = 0; i < this->len; i++)
+            this->values[i] = 0;
     }
 }
 Array::~Array()
@@ -77,6 +81,12 @@ void Array::set(int _index, int _value)
 {
     if (_index >= 0 && _index < this->len)
         this->values[_index] = _value;
+    else if (this->len = 0 && _index == 0)
+    {
+        this->len = 1;
+        this->values = new int[1];
+        this->values[0] = _value;
+    }
 }
 
 int Array::getValue(int _index)
@@ -124,7 +134,7 @@ void Array::add(int _value, int _index, bool _checkForDuplicate)
     delete[] temp;
 }
 
-// This function removes and returns the first entry of the array. Returns -1 if the array is emptyint Array::fifo()
+// This function removes and returns the first entry of the array. Returns -1 if the array is empty
 int Array::fifo()
 {
     if (this->len > 0)
@@ -179,6 +189,31 @@ int Array::length()
     return this->len;
 }
 
+void Array::sort()
+{
+    sort(true);
+}
+
+void Array::sort(bool ascending)
+{
+    int k;
+    int aux;
+    // Bubble sort algorithm
+    do
+    {
+        k = 0;
+        for (int i = 0; i < this->len - 1; i++)
+            if ((this->values[i] > this->values[i + 1] && ascending) ||
+                (this->values[i] < this->values[i + 1] && !ascending))
+            {
+                aux = this->values[i];
+                this->values[i] = this->values[i + 1];
+                this->values[i + 1] = aux;
+                k = 1;
+            }
+    } while (k == 1);
+}
+
 // This function removes the value (if found) and resizes the array
 void Array::removeByValue(int _value)
 {
@@ -191,46 +226,41 @@ void Array::removeByIndex(int _index)
 {
     if (_index >= 0 && _index < this->len)
     {
-        int *temp = new int[this->len - 1];
+        int *temp = new int[--this->len];
         // Copy all nodes except the removed one
-        for (int i = 0; i < this->len - 1; i++)
+        for (int i = 0; i < this->len; i++)
             temp[i] = this->values[i + (i >= _index ? 1 : 0)];
         delete[] this->values;
-        this->values = new int[--this->len];
+        this->values = new int[this->len];
         for (int i = 0; i < this->len; i++)
             this->values[i] = temp[i];
         delete[] temp;
     }
 }
 
-int &Array::operator[](int _index)
+bool operator!=(const Array &_a, const Array &_b)
 {
-    if (_index >= 0 && _index < this->len)
-        return this->values[_index];
-    else
-        exit(1);
-}
-
-bool Array::operator!=(Array _a)
-{
-    if (this == &_a)
+    if (&_a == &_b)
         return false;
-    if (this->len != _a.len)
+    if (_a.len != _b.len)
         return true;
-    for (int i = 0; i < this->len; i++)
-        if (_a[i] != (*this)[i])
+
+    for (int i = 0; i < _b.len; i++)
+        if (_a.values[i] != _b.values[i])
             return true;
     return false;
 }
 
-bool Array::operator==(Array _a)
+bool operator==(const Array &_a, const Array &_b)
 {
-    if (this == &_a)
+    if (&_a == &_b)
         return true;
-    if (this->len == _a.len)
-        for (int i = 0; i < this->len; i++)
-            if (_a[i] != (*this)[i])
+    if (_a.len == _b.len)
+    {
+        for (int i = 0; i < _b.len; i++)
+            if (_a.values[i] != _b.values[i])
                 return false;
+    }
     return true;
 }
 

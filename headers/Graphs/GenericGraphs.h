@@ -46,12 +46,8 @@ void GenericGraph::InitializeGraph()
 {
     if (this->log->getClearConsole())
         system("CLS");
-    std::cout
-        << std::string(paddingOfString(18), '-')
-        << "Reading graph data"
-        << std::string(paddingOfString(18), '-')
-        << std::endl
-        << "Enter the number of nodes in the graph: ";
+    std::cout << stringWithPadding("Reading graph data", 18, '-')
+              << "Enter the number of nodes in the graph: ";
     int x;
     std::cin >> x;
     this->nodes->resize(x);
@@ -65,8 +61,7 @@ void GenericGraph::InitializeGraph()
     {
         std::cout << "Please pick a source node [0-"
                   << this->nodes->length() - 1
-                  << "]:"
-                  << std::endl;
+                  << "]: ";
         std::cin >> this->src;
         // If the src is part of the current nodes, break the loop
         if (this->src <= this->nodes->length() - 1 &&
@@ -130,6 +125,7 @@ void GenericGraph::InitializeGraph()
     }
 }
 
+/*
 void GenericGraph::Solve()
 {
     int k = 0;
@@ -138,52 +134,70 @@ void GenericGraph::Solve()
         analyzedNodesIndex = 0,
         orderIndex = 0;
 
-    Array *knownNodes = new Array(this->nodes->length()),
+    // knownNodes of len 1 (only the src)
+    // unknownNodes of nodes length because we insert all nodes, after which we remove the src
+    // analyzed of length 0
+    Array *knownNodes = new Array(1),
           *unknownNodes = new Array(this->nodes->length()),
-          *analyzedNodes = new Array(this->nodes->length()),
+          *analyzedNodes = new Array(),
           *order = new Array(this->nodes->length()),
           *position = new Array(this->nodes->length());
+
+    // Initialize the order for the source
+    order->set(this->src, ++k);
 
     // Starting from the source
     knownNodes->set(0, this->src);
 
-    // Copy all nodes except the source
-    for (int i = 0, addition = 0; i < this->nodes->length() - 1; i++)
+    // Copy all nodes and remove the source
+    for (int i = 0; i < this->nodes->length(); i++)
+        unknownNodes->set(i, this->nodes->getValue(i));
+    unknownNodes->removeByValue(this->src);
+
+    if (this->log->getDebug())
     {
-        // If we find the source, we just increment a temporary offset of the array to skip the source
-        if (this->nodes[i] == this->src)
-            addition++;
-        unknownNodes->set(i, this->nodes->getValue(i + addition));
+        std::cout << std::endl
+                  << "Adjacency matrix: "
+                  << std::endl;
+        for (int i = 0; i < this->nodes->length(); i++)
+        {
+            for (int j = 0; j < this->nodes->length(); j++)
+                std::cout << this->edges[i][j]
+                          << ' ';
+            std::cout << std::endl;
+        }
     }
 
-    // Instantiate the position array
-    for (int i = 0; i < this->nodes->length(); i++)
-        position[i] = 0;
-
-    while (unknownNodes != this->nodes)
+    while (*analyzedNodes != *this->nodes)
     {
         while (knownNodes->length() > 0)
         {
             // Select a node from knownNodes
-            int x = knownNodes->first();
-            for (int y = 0; y < this->nodes->length(); y++)
-            {
+            int x = knownNodes->first(),
+                y;
+            bool exists = false;
+            for (y = 0; y < this->nodes->length(); y++)
                 // If there is an edge from the selected node to an unknown node
-                std::cout << std::endl
-                          << y;
+                // stop the loop and keep said edge
                 if (this->edges[x][y] == 1 && unknownNodes->getIndex(y) != -1)
                 {
-                    // Get the other edge end
-                    unknownNodes->removeByValue(y);
-                    knownNodes->add(y);
-                    position[y] = x;
-                    order[y] = ++k;
+                    exists = true;
+                    break;
                 }
-                else
-                {
-                    knownNodes->removeByValue(x);
-                    analyzedNodes->add(x);
-                }
+
+            if (exists)
+            {
+                // if it exists, move it from unknown to known
+                unknownNodes->removeByValue(y);
+                knownNodes->add(y);
+                position->set(y, x);
+                order->set(y, ++k);
+            }
+            else
+            {
+                // if there is no such edge, set the main point as completly analyzed
+                knownNodes->removeByValue(x);
+                analyzedNodes->add(x);
             }
         }
         // If there are still nodes not completly analyzed but we have no adjacent nodes, switch the source node
@@ -194,8 +208,17 @@ void GenericGraph::Solve()
             unknownNodes->removeByValue(newSource);
             order[newSource] = ++k;
         }
+
+        // sort these before comparing them in the while
+        analyzedNodes->sort();
+        this->nodes->sort();
     }
 
     std::cout << "Algorithm finished.";
+}
+*/
+
+void GenericGraph::Solve(){
+    //BFS
 }
 #pragma endregion

@@ -20,6 +20,7 @@ struct menuSet
 class menu
 {
 private:
+    int selectedChild = -1; // If this has the value -1, it means we are not in selective mode, otherwise, it represents the index of the children
     char *name;
     int nameLength = 0;
     int childrenSize = 0; // Size initialized with 0 for menu entries which have no children
@@ -55,6 +56,10 @@ int CountOfCharInString(std::string, char);
 void AddChildrenIndexes(std::string, menuData &);
 int paddingOfString(int);
 int paddingOfString(int, int);
+// This method returns a string which adds the the provided filler to both sides of the provided string as a padding until the final string reaches the length of 50
+std::string stringWithPadding(const char *, int, char);
+// This method returns a string which adds the the provided filler to both sides of the provided string as a padding until the final string reaches the length of 50 and adds the selection identifier if isSelected = true
+std::string stringWithPadding(const char *, int, char, bool);
 #pragma endregion
 
 #pragma region Constructors definitions
@@ -257,44 +262,34 @@ void menu::PutMenu()
     if (this->log->getClearConsole())
         this->log->ClearConsole();
 
-    // Calculate the padding required for each name/message to center them
-    std::cout << std::string(paddingOfString(this->nameLength), '-')
-              << this->name
-              << std::string(paddingOfString(this->nameLength), '-')
+    std::cout << stringWithPadding("(PRESS [x] TO SWITCH MENU TYPE)", 31, '-')
               << std::endl;
+
+    // Calculate the padding required for each name/message to center them
+    std::cout << stringWithPadding(this->name, this->nameLength, '-');
+
     for (int i = 0; i < this->childrenSize; i++)
         std::cout << i
                   << ": "
-                  << std::string(paddingOfString(this->children[i].nameLength, 3), ' ')
-                  << this->children[i].name
-                  << std::string(paddingOfString(this->children[i].nameLength, 3), ' ')
-                  << std::endl;
+                  << stringWithPadding(this->children[i].name,
+                                       this->children[i].nameLength + 2 * (2 + (i < 10 ? 1 : 2)), // the length of the string + the length of "i: " * 2 (for each side's padding)
+                                       ' ',
+                                       this->selectedChild == i);
+
     // Back command for nested menus
     if (this->parent)
         std::cout << this->childrenSize
                   << ": "
-                  << std::string(paddingOfString(4, 4), ' ')
-                  << "Back"
-                  << std::string(paddingOfString(4, 4), ' ')
-                  << std::endl;
+                  << stringWithPadding("Back",
+                                       4 + 2 * (2 + (this->childrenSize < 10 ? 1 : 2)), // the length of the string + the length of "i: " * 2 (for each side's padding),
+                                       ' ',
+                                       this->selectedChild == this->childrenSize);
 
-    std::cout
-        << std::string(paddingOfString(this->nameLength), '-')
-        << this->name
-        << std::string(paddingOfString(this->nameLength), '-')
-        << std::endl
-        << std::string(paddingOfString(35), ' ')
-        << "Please enter the index of a command"
-        << std::string(paddingOfString(35), ' ')
-        << std::endl
-        << std::string(paddingOfString(4), ' ')
-        << "-OR-"
-        << std::string(paddingOfString(4), ' ')
-        << std::endl
-        << std::string(paddingOfString(18), ' ')
-        << "press ESC to exit:"
-        << std::string(paddingOfString(18), ' ')
-        << std::endl;
+    std::cout << stringWithPadding(this->name, this->nameLength, '-')
+              << (this->selectedChild == -1 ? stringWithPadding("Please enter the index of a command", 35, ' ')
+                                            : stringWithPadding("Press Up/Down/Enter to use menu", 31, ' '))
+              << stringWithPadding("-OR-", 4, ' ')
+              << stringWithPadding("press Escape to exit", 20, ' ');
 }
 
 void menu::GetMenuCMD()
@@ -306,40 +301,118 @@ void menu::GetMenuCMD()
         std::cout << std::endl
                   << std::flush;
 
-        /* Index is calculated by:
-         * extracting 1 for the string-length
-         * adding 1 for the Back cmd (if case)
-         * adding the 48 ASCII offset for the numerical value
-         */
-        if (confirmation >= '0' && confirmation < this->childrenSize + 48)
+        // If the key ESC was pressed, close the program
+        if (confirmation == 27)
+            exit(0);
+
+        // Switch modes
+        else if (confirmation == 'x' || confirmation == 'X')
         {
-            // If the confirmation is a char between 0 and the index
-            int currentIndex = confirmation - 48; // Char to Int
-            if (this->children[currentIndex].childrenSize == 0)
+            // Change the modes of the selection
+            this->selectedChild = this->selectedChild == -1 ? 0 : -1;
+            this->PutMenu();
+        }
+
+        else if (selectedChild == -1)
+        {
+            // I.E. Selection mode is by Index
+
+            /* Index is calculated by:
+             * extracting 1 for the string-length
+             * adding 1 for the Back cmd (if case)
+             * adding the 48 ASCII offset for the numerical value
+             */
+            if (confirmation >= '0' && confirmation < this->childrenSize + 48)
             {
-                if (this->log->getDebug())
-                    std::cout << this->children[currentIndex].name
-                              << " is empty"
-                              << std::endl;
-                this->children[currentIndex].ExecuteFunctionFromName();
+                // If the confirmation is a char between 0 and the index
+                int currentIndex = confirmation - 48; // Char to Int
+                if (this->children[currentIndex].childrenSize == 0)
+                {
+                    if (this->log->getDebug())
+                        std::cout << this->children[currentIndex].name
+                                  << " is empty"
+                                  << std::endl;
+                    this->children[currentIndex].ExecuteFunctionFromName();
+                }
+                else
+                {
+                    // Set children's selection mode to Index
+                    this->children[currentIndex].selectedChild = -1;
+                    this->children[currentIndex].GetMenuCMD();
+                }
+                this->PutMenu();
+                // return
+            }
+            else if (confirmation == this->childrenSize + 48 && this->parent != nullptr)
+            {
+                // Set parent's selection mode to Index
+                this->parent->selectedChild = -1;
+                // Return to end this function and return to the previous loop (main loop of the parent menu)
+                return;
+                break; // Double check if required
             }
             else
-                this->children[currentIndex].GetMenuCMD();
-            this->PutMenu();
-            // return
+                std::cout << "Please enter a valid index..."
+                          << std::endl;
         }
-        else if (confirmation == this->childrenSize + 48 && this->parent != nullptr)
-        {
-            // Return to end this function and return to the previous loop (main loop of the parent menu)
-            return;
-            break; // Double check if required
-        }
-        // If the key ESC was pressed, close the program
-        else if (confirmation == 27)
-            exit(0);
         else
-            std::cout << "Please enter a valid index..."
-                      << std::endl;
+        {
+            // Arrow ASCII is made out of 2 chars
+            // We check whether we should execute the cmd or skip the first char
+            if (confirmation != -32)
+            {
+                // Enter is pressed
+                if (confirmation == 13)
+                {
+                    // Check if the Back option was selected
+                    if (this->selectedChild == this->childrenSize && this->parent != nullptr)
+                    {
+                        // Set parent's selection mode to Navigation
+                        this->parent->selectedChild = 0;
+                        // Return to end this function and return to the previous loop (main loop of the parent menu)
+                        return;
+                        break; // Double check if required
+                    }
+                    else
+                    {
+                        if (this->children[this->selectedChild].childrenSize == 0)
+                        {
+                            if (this->log->getDebug())
+                                std::cout << this->children[this->selectedChild].name
+                                          << " is empty"
+                                          << std::endl;
+                            this->children[this->selectedChild].ExecuteFunctionFromName();
+                        }
+                        else
+                        {
+                            // Set children's selection mode to Navigation
+                            this->children[this->selectedChild].selectedChild = 0;
+                            this->children[this->selectedChild].GetMenuCMD();
+                        }
+                        this->PutMenu();
+                        // return
+                    }
+                }
+                // I.E. Selection mode is by Navigation
+                else if (confirmation == 72)
+                {
+                    // Up arrow
+                    if (selectedChild != 0)
+                        selectedChild--;
+                    this->PutMenu();
+                }
+                else if (confirmation == 80)
+                {
+                    // Down arrow
+                    if (selectedChild != this->childrenSize + (this->parent ? 0 : -1))
+                        selectedChild++;
+                    this->PutMenu();
+                }
+                else
+                    std::cout << "Please only use the Up/Down arrows to navigate and Enter to confirm..."
+                              << std::endl;
+            }
+        }
     }
 }
 
@@ -458,5 +531,26 @@ int paddingOfString(int strLength, int ignoreCount)
     // Max line char for logging
     int lineLength = 50;
     return ((lineLength - strLength) / 2 - ignoreCount);
+}
+
+std::string stringWithPadding(const char *str, int strLength, char filler)
+{
+    return stringWithPadding(str, strLength, filler, false);
+}
+
+std::string stringWithPadding(const char *str, int strLength, char filler, bool isSelected)
+{
+    if (isSelected)
+        return (std::string(paddingOfString(strLength + 6), filler) +
+                ">> " +
+                std::string(str) +
+                " <<" +
+                std::string(paddingOfString(strLength + 6), filler) +
+                "\n");
+    else
+        return (std::string(paddingOfString(strLength), filler) +
+                std::string(str) +
+                std::string(paddingOfString(strLength), filler) +
+                "\n");
 }
 #pragma endregion
