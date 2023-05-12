@@ -8,3 +8,9 @@ Help menu
 algoritmi folositi in pdf
 
 check selectedChild when going in or out of a menu to swap it through modes (default 0/-1 if toggled on/off)
+
+add max size on no nodes input
+change arrays and matrix into linked lists (single/double)
+-> circular FIFO (last is linked by first)
+
+graf ref -> text data

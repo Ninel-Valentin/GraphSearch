@@ -8,23 +8,17 @@ private:
     bool debug = false;
 
 public:
-#pragma region Constructors prototypes
     loggingSystem();
     loggingSystem(bool, bool);
     ~loggingSystem();
-#pragma endregion
-#pragma region Modifiers prototypes
+    
     bool getDebug();
     void setDebug(bool);
     bool getClearConsole();
     void setClearConsole(bool);
-#pragma endregion
-#pragma region Functions prototypes
     void ClearConsole();
-#pragma endregion
 };
 
-#pragma region Constructors definitions
 loggingSystem::loggingSystem()
 {
     std::cout << "Hello!" << std::endl;
@@ -47,8 +41,7 @@ loggingSystem::~loggingSystem()
         std::cout << "DEBUG: Logging system erased!" << std::endl;
     }
 }
-#pragma endregion
-#pragma region Modifiers definitions
+
 bool loggingSystem::getDebug()
 {
     return this->debug;
@@ -65,11 +58,9 @@ void loggingSystem::setClearConsole(bool _clearConsole)
 {
     this->clearLog = _clearConsole;
 }
-#pragma endregion
-#pragma region Functions definitions
+
 void loggingSystem::ClearConsole()
 {
     // This clears the console
     system("CLS");
 }
-#pragma endregion

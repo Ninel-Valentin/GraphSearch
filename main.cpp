@@ -1,11 +1,20 @@
 #include <iostream>
 #include <conio.h>
+
 #ifndef LOGGINGSYSTEM_H
 #define LOGGINGSYSTEM_H
 #include "headers/loggingSystem.h"
 #endif
-#include "headers/menu.h"
+
+#ifndef GENERICGRAPH_H
+#define GENERICGRAPH_H
 #include "headers/Graphs/GenericGraphs.h"
+#endif
+
+#ifndef MENU_H
+#define MENU_H
+#include "headers/Menu/menu.h"
+#endif;
 
 int main()
 {
@@ -13,19 +22,17 @@ int main()
     loggingSystem *log = new loggingSystem();
     log->setDebug(true);
 
-    // // menu tree initialization
+    // menu tree initialization
     // menu *mainMenu = menu::InstantiateMenu(log);
 
     // // main loop
     // mainMenu->GetMenuCMD();
 
-    GenericGraph *graph = new GenericGraph(log);
-    graph->InitializeGraph();
+    GenericGraph *graph = new GenericGraph();
+    graph->InitializeGraph(log);
 
     graph->Solve();
 
-    delete log;
-    // delete mainMenu;
     std::cout << "Press any key to close the console.";
     getch();
     return 0;

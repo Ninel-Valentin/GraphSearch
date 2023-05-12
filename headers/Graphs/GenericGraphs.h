@@ -1,50 +1,54 @@
 #include <iostream>
+
 #ifndef LOGGINGSYSTEM_H
 #define LOGGINGSYSTEM_H
 #include "../loggingSystem.h"
 #endif
+
+#ifndef ARRAY_H
+#define ARRAY_H
 #include "Array.h"
+#endif
 
 class GenericGraph
 {
     int src = 0;
     Array *nodes;
     int **edges;
-    loggingSystem *log;
 
 public:
     GenericGraph();
-    GenericGraph(loggingSystem *);
     ~GenericGraph();
-    void InitializeGraph();
-    void Solve();
+    void InitializeGraph(loggingSystem *);
+    void Solve(Array *, Array *);
 };
 
-#pragma region Constructors definitions
 GenericGraph::GenericGraph()
 {
-}
-GenericGraph::GenericGraph(loggingSystem *_log)
-{
     this->nodes = new Array;
-    log = _log;
 }
-
 GenericGraph::~GenericGraph()
 {
-    if (this->nodes->length() > 0)
-        delete nodes;
     if (this->nodes->length() > 0)
     {
         for (int i = 0; i < this->nodes->length(); i++)
             delete[] edges[i];
         delete[] edges;
+        delete nodes;
     }
 }
 
-void GenericGraph::InitializeGraph()
+void GenericGraph::InitializeGraph(loggingSystem *log)
 {
-    if (this->log->getClearConsole())
+    // If this is a reInitialization, first clear the data which does not reset below already
+    if (nodes->length() != 0)
+    {
+        for (int i = 0; i < this->nodes->length(); i++)
+            delete[] edges[i];
+        delete[] edges;
+    }
+
+    if (log->getClearConsole())
         system("CLS");
     std::cout << stringWithPadding("Reading graph data", 18, '-')
               << "Enter the number of nodes in the graph: ";
@@ -67,7 +71,8 @@ void GenericGraph::InitializeGraph()
         if (this->src <= this->nodes->length() - 1 &&
             this->src >= 0)
             break;
-        std::cout << "Incorrect value! Retrying...";
+        std::cout << "Incorrect value! Retrying..."
+                  << std::endl;
     }
 
     int edgesCount = 0;
@@ -76,11 +81,12 @@ void GenericGraph::InitializeGraph()
         std::cout
             << "Please enter the number of edges in the graph: ";
         std::cin >> edgesCount;
-        if (this->nodes->length() * (this->nodes->length() - 1) / 2 >= this->nodes->length())
+        int maxEdges = this->nodes->length() * (this->nodes->length() - 1) / 2;
+        if (edgesCount <= maxEdges)
             break;
         else
             std::cout << "You can not have more than "
-                      << this->nodes->length() * (this->nodes->length() - 1) / 2
+                      << maxEdges
                       << " edges in this graph."
                       << std::endl;
     }
@@ -125,26 +131,25 @@ void GenericGraph::InitializeGraph()
     }
 }
 
-/*
-void GenericGraph::Solve()
+// This function provides the position array as the first param, and the length array as the second param
+void GenericGraph::Solve(Array *positionArr, Array *lengthArr)
 {
-    int k = 0;
     int knownNodesIndex = 1,
         unknownNodesIndex = this->nodes->length() - 1,
         analyzedNodesIndex = 0,
-        orderIndex = 0;
+        lengthIndex = 0;
 
     // knownNodes of len 1 (only the src)
     // unknownNodes of nodes length because we insert all nodes, after which we remove the src
     // analyzed of length 0
     Array *knownNodes = new Array(1),
           *unknownNodes = new Array(this->nodes->length()),
-          *analyzedNodes = new Array(),
-          *order = new Array(this->nodes->length()),
-          *position = new Array(this->nodes->length());
+          *analyzedNodes = new Array();
 
-    // Initialize the order for the source
-    order->set(this->src, ++k);
+    delete[] lengthArr;
+    lengthArr = new Array(this->nodes->length());
+    delete[] positionArr;
+    positionArr = new Array(this->nodes->length()); // All values initialized with 0
 
     // Starting from the source
     knownNodes->set(0, this->src);
@@ -154,71 +159,40 @@ void GenericGraph::Solve()
         unknownNodes->set(i, this->nodes->getValue(i));
     unknownNodes->removeByValue(this->src);
 
-    if (this->log->getDebug())
-    {
-        std::cout << std::endl
-                  << "Adjacency matrix: "
-                  << std::endl;
-        for (int i = 0; i < this->nodes->length(); i++)
-        {
-            for (int j = 0; j < this->nodes->length(); j++)
-                std::cout << this->edges[i][j]
-                          << ' ';
-            std::cout << std::endl;
-        }
-    }
-
     while (*analyzedNodes != *this->nodes)
     {
-        while (knownNodes->length() > 0)
+        while (knownNodes->length() != 0)
         {
-            // Select a node from knownNodes
+
+            // Select the oldest node from knownNodes (I.E. the first node)
             int x = knownNodes->first(),
                 y;
-            bool exists = false;
+
             for (y = 0; y < this->nodes->length(); y++)
-                // If there is an edge from the selected node to an unknown node
-                // stop the loop and keep said edge
+                // For all edges from X to an unknown node:
                 if (this->edges[x][y] == 1 && unknownNodes->getIndex(y) != -1)
                 {
-                    exists = true;
-                    break;
+                    knownNodes->add(y);
+                    unknownNodes->removeByValue(y);
+                    positionArr->set(y, x);
+                    lengthArr->set(y, lengthArr->getValue(x) + 1);
                 }
 
-            if (exists)
-            {
-                // if it exists, move it from unknown to known
-                unknownNodes->removeByValue(y);
-                knownNodes->add(y);
-                position->set(y, x);
-                order->set(y, ++k);
-            }
-            else
-            {
-                // if there is no such edge, set the main point as completly analyzed
-                knownNodes->removeByValue(x);
-                analyzedNodes->add(x);
-            }
+            knownNodes->removeByValue(x);
+            analyzedNodes->add(x);
         }
-        // If there are still nodes not completly analyzed but we have no adjacent nodes, switch the source node
-        if (unknownNodes->length() > 0)
+        if (unknownNodes->length() != 0)
         {
+            // Select a new source node
             int newSource = unknownNodes->first();
             knownNodes->add(newSource);
             unknownNodes->removeByValue(newSource);
-            order[newSource] = ++k;
         }
 
-        // sort these before comparing them in the while
+        // Sort these before comparing them in the while -> this does not affect the algorithm
         analyzedNodes->sort();
         this->nodes->sort();
     }
 
-    std::cout << "Algorithm finished.";
+    std::cout << "Finished!";
 }
-*/
-
-void GenericGraph::Solve(){
-    //BFS
-}
-#pragma endregion

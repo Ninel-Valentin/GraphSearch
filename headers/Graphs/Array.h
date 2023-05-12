@@ -25,11 +25,9 @@ public:
     void sort(bool);
     void removeByValue(int);
     void removeByIndex(int);
-    int &operator[](int);
+    // int &operator[](int);
     friend bool operator!=(const Array &, const Array &);
     friend bool operator==(const Array &, const Array &);
-    // friend std::istream &operator>>(std::istream &, Array &);
-    // friend std::ostream &operator<<(std::ostream &, Array &);
 };
 Array::Array() {}
 Array::Array(int _length)
@@ -238,6 +236,15 @@ void Array::removeByIndex(int _index)
     }
 }
 
+// int &Array::operator[](int i)
+// {
+//     if (i <= this->len){
+//         return this->values[i];
+//     }
+//     else
+//         exit(1);
+// }
+
 bool operator!=(const Array &_a, const Array &_b)
 {
     if (&_a == &_b)
@@ -263,11 +270,3 @@ bool operator==(const Array &_a, const Array &_b)
     }
     return true;
 }
-
-// std::istream &operator>>(std::istream &str, Array &_a)
-// {
-// }
-
-// std::ostream &operator<<(std::ostream &str, Array &_a)
-// {
-// }

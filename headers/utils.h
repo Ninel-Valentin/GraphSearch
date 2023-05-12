@@ -1,7 +1,10 @@
 #include <map>
 #include <iostream>
 #include <conio.h>
-#include "MenuFunctions.h"
+#include "Menu/MenuFunctions.h"
+
+// Max line char for logging
+const int lineLength = 50;
 
 enum MenuNames
 {
@@ -17,10 +20,9 @@ enum MenuNames
     Default_location,
     Toggle_Debug,
     Toggle_console_clear,
+    Help,
     Exit
 };
-
-void InitializeMenuNameMap(std::map<std::string, MenuNames> &);
 
 bool GetQuestionAnswer(const char *question)
 {
@@ -60,5 +62,37 @@ void InitializeMenuNameMap(std::map<std::string, MenuNames> &_map)
     _map["Default location"] = Default_location;
     _map["Toggle Debug"] = Toggle_Debug;
     _map["Toggle console clear"] = Toggle_console_clear;
+    _map["Help"] = Help;
     _map["Exit"] = Exit;
+}
+// This function takes as argument the length of the message it will add the padding to
+int paddingOfString(int strLength, int ignoreCount)
+{
+    return ((lineLength - strLength) / 2 - ignoreCount);
+}
+
+int paddingOfString(int strLength)
+{
+    return paddingOfString(strLength, 0);
+}
+
+std::string stringWithPadding(const char *str, int strLength, char filler, bool isSelected)
+{
+    if (isSelected)
+        return (std::string(paddingOfString(strLength + 6), filler) +
+                ">> " +
+                std::string(str) +
+                " <<" +
+                std::string(paddingOfString(strLength + 6), filler) +
+                "\n");
+    else
+        return (std::string(paddingOfString(strLength), filler) +
+                std::string(str) +
+                std::string(paddingOfString(strLength), filler) +
+                "\n");
+}
+
+std::string stringWithPadding(const char *str, int strLength, char filler)
+{
+    return stringWithPadding(str, strLength, filler, false);
 }

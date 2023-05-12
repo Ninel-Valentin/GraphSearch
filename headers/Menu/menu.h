@@ -1,6 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#ifndef LOGGINGSYSTEM_H
+#define LOGGINGSYSTEM_H
+#include "../loggingSystem.h"
+#endif
 
 struct menuData
 {
@@ -26,63 +30,27 @@ private:
     int childrenSize = 0; // Size initialized with 0 for menu entries which have no children
     menu *children;
     menu *parent;
-    // bool isEmpty;
     loggingSystem *log; // This represents a reference to the logging system of the program
     static const char *dataPath;
 
 public:
-#pragma region Constructors prototypes
     menu();
-    menu(const menu &);
     menu(int, char *, int, loggingSystem *);
     ~menu();
-#pragma endregion
-#pragma region Constructors Functions prototypes
+
     static menuSet *ReadMenuSetFromFile(loggingSystem *);
     static menu *InstantiateMenu(loggingSystem *);
-#pragma endregion
-#pragma region Modifiers prototypes
-#pragma endregion
-#pragma region Service prototypes
+
     void PutMenu();
     void GetMenuCMD();
     void ExecuteFunctionFromName();
-
-#pragma endregion
 };
 const char *menu::dataPath = "storage/menuSet.txt";
-#pragma region Helper Functions prototypes
 int CountOfCharInString(std::string, char);
 void AddChildrenIndexes(std::string, menuData &);
-int paddingOfString(int);
-int paddingOfString(int, int);
-// This method returns a string which adds the the provided filler to both sides of the provided string as a padding until the final string reaches the length of 50
-std::string stringWithPadding(const char *, int, char);
-// This method returns a string which adds the the provided filler to both sides of the provided string as a padding until the final string reaches the length of 50 and adds the selection identifier if isSelected = true
-std::string stringWithPadding(const char *, int, char, bool);
-#pragma endregion
 
-#pragma region Constructors definitions
 menu::menu()
 {
-}
-menu::menu(const menu &_m)
-{
-    delete[] this->name;
-    this->nameLength = _m.nameLength;
-    this->name = new char[(this->nameLength + 1)];
-
-    // Copy the name of the menu
-    for (int i = 0; i < this->nameLength; i++)
-        this->name[i] = _m.name[i];
-    this->childrenSize = _m.childrenSize;
-    this->children = new menu[this->childrenSize];
-
-    // Copy the children of the menu
-    for (int i = 0; i < this->childrenSize; i++)
-        this->children[i] = _m.children[i];
-
-    this->parent = new menu();
 }
 menu::menu(int _nameLength, char *_name, int _childrenSize, loggingSystem *_log)
 {
@@ -109,8 +77,7 @@ menu::menu(int _nameLength, char *_name, int _childrenSize, loggingSystem *_log)
 menu::~menu()
 {
 }
-#pragma endregion
-#pragma region Constructors Functions definitions
+
 menuSet *menu::ReadMenuSetFromFile(loggingSystem *log)
 {
     // Declare the input file stream and open the file.
@@ -211,11 +178,11 @@ menuSet *menu::ReadMenuSetFromFile(loggingSystem *log)
     return set;
 }
 
-menu *menu::InstantiateMenu(loggingSystem *log)
+menu *menu::InstantiateMenu(loggingSystem *_log)
 {
     // Instantiate the menuSet data from the file, which will then be parsed into an object.
-    menuSet *menuDataSet = menu::ReadMenuSetFromFile(log);
-    if (log->getDebug())
+    menuSet *menuDataSet = menu::ReadMenuSetFromFile(_log);
+    if (_log->getDebug())
     {
         std::cout << "DEBUG: Retrieved the menuSet data successfully. Parsing it into menu data..."
                   << std::endl
@@ -228,7 +195,7 @@ menu *menu::InstantiateMenu(loggingSystem *log)
 
     // Instantiate a menu for each entry
     for (int i = 0; i < menuDataSet->size; i++)
-        _menu[i] = *(new menu(menuDataSet->data[i].nameLength, menuDataSet->data[i].name, menuDataSet->data[i].childrenSize, log));
+        _menu[i] = *(new menu(menuDataSet->data[i].nameLength, menuDataSet->data[i].name, menuDataSet->data[i].childrenSize, _log));
 
     // Iterate the menus and link the children with the parents
     for (int i = 0; i < menuDataSet->size; i++)
@@ -252,10 +219,7 @@ menu *menu::InstantiateMenu(loggingSystem *log)
     delete _menu->parent;
     _menu->parent = nullptr;
 }
-#pragma endregion
-#pragma region Modifiers prototypes
-#pragma endregion
-#pragma region Service definitions
+
 void menu::PutMenu()
 {
     // Check if the loggingSystem requires the console to be cleared
@@ -272,7 +236,8 @@ void menu::PutMenu()
         std::cout << i
                   << ": "
                   << stringWithPadding(this->children[i].name,
-                                       this->children[i].nameLength + 2 * (2 + (i < 10 ? 1 : 2)), // the length of the string + the length of "i: " * 2 (for each side's padding)
+                                       // the length of the string + the length of "i: " * 2 (for each side's padding)
+                                       this->children[i].nameLength + 2 * (2 + (i < 10 ? 1 : 2)),
                                        ' ',
                                        this->selectedChild == i);
 
@@ -281,11 +246,13 @@ void menu::PutMenu()
         std::cout << this->childrenSize
                   << ": "
                   << stringWithPadding("Back",
-                                       4 + 2 * (2 + (this->childrenSize < 10 ? 1 : 2)), // the length of the string + the length of "i: " * 2 (for each side's padding),
+                                       // the length of the string + the length of "i: " * 2 (for each side's padding),
+                                       4 + 2 * (3 + (this->childrenSize < 10 ? 1 : 2)),
                                        ' ',
                                        this->selectedChild == this->childrenSize);
 
     std::cout << stringWithPadding(this->name, this->nameLength, '-')
+              << std::endl
               << (this->selectedChild == -1 ? stringWithPadding("Please enter the index of a command", 35, ' ')
                                             : stringWithPadding("Press Up/Down/Enter to use menu", 31, ' '))
               << stringWithPadding("-OR-", 4, ' ')
@@ -480,6 +447,22 @@ void menu::ExecuteFunctionFromName()
                   << std::endl;
         getch();
         break;
+    case Help:
+        if (this->log->getClearConsole())
+            system("CLS");
+        std::cout << "This application with a friendly interface has been created to:"
+                  << std::endl
+                  << "\t> Instantiate a graph and it's data."
+                  << std::endl
+                  << "\t> Get the shortest path between any 2 nodes."
+                  << std::endl
+                  << std::endl
+                  << "Project realised by Ninel-Valentin Banica 2023"
+                  << std::endl
+                  << std::endl
+                  << "Press any key to get back to the menu...";
+        getch();
+        break;
     case Exit:
         exit(0);
     default:
@@ -490,8 +473,6 @@ void menu::ExecuteFunctionFromName()
     }
 }
 
-#pragma endregion
-#pragma region Helper Functions definitions
 int CountOfCharInString(std::string str, char ch)
 {
     int count = 0;
@@ -520,37 +501,3 @@ void AddChildrenIndexes(std::string indexesString, menuData &data)
             temp += indexesString.at(i);
     }
 }
-
-int paddingOfString(int strLength)
-{
-    return paddingOfString(strLength, 0);
-}
-// This function takes as argument the length of the message it will add the padding to
-int paddingOfString(int strLength, int ignoreCount)
-{
-    // Max line char for logging
-    int lineLength = 50;
-    return ((lineLength - strLength) / 2 - ignoreCount);
-}
-
-std::string stringWithPadding(const char *str, int strLength, char filler)
-{
-    return stringWithPadding(str, strLength, filler, false);
-}
-
-std::string stringWithPadding(const char *str, int strLength, char filler, bool isSelected)
-{
-    if (isSelected)
-        return (std::string(paddingOfString(strLength + 6), filler) +
-                ">> " +
-                std::string(str) +
-                " <<" +
-                std::string(paddingOfString(strLength + 6), filler) +
-                "\n");
-    else
-        return (std::string(paddingOfString(strLength), filler) +
-                std::string(str) +
-                std::string(paddingOfString(strLength), filler) +
-                "\n");
-}
-#pragma endregion
