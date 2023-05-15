@@ -14,3 +14,6 @@ change arrays and matrix into linked lists (single/double)
 -> circular FIFO (last is linked by first)
 
 graf ref -> text data
+
+arrays in graph.
+graph in main si pasat ca reff pt toate meniurile

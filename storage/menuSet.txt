@@ -4,16 +4,16 @@ Start
 Graph data>3|4|5|10|12|
 Read data
 Display data
-Modify data>6|7|8|9|
+Modify existent data>6|7|8|9|
 Add node
 Delete node
 Add link
 Delete link
 Erase data
 System>15|16|17|
-Change location of graph data>13|14|
+Change save location of graph data>13|14|
 Custom location
-Default location
+Restore default save location
 Toggle Debug
 Toggle console clear
 Help

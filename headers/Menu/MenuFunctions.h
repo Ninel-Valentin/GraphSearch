@@ -1,20 +1,5 @@
 #include <iostream>
 
-void StartAlgorithm()
-{
-    std::cout << "Started algorithm"
-              << std::endl;
-}
-void ReadData()
-{
-    std::cout << "Read data"
-              << std::endl;
-}
-void DisplayData()
-{
-    std::cout << "Display data"
-              << std::endl;
-}
 void AddNode()
 {
     std::cout << "Add node"

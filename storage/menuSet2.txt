@@ -1,0 +1,20 @@
+19
+Main menu
+Start>0
+Graph data>0
+Read data>2
+Display data>2
+Modify data>2
+Add node>5
+Delete node>5
+Add link>5
+Delete link>5
+Erase data>2
+System>0
+Change location of graph data>2
+Custom location>12
+Default location>12
+Toggle Debug>11
+Toggle console clear>11
+Help>11
+Exit>0

@@ -1,6 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
+#ifndef ARRAY_H
+#define ARRAY_H
+#include "../Graphs/Array.h"
+#endif
+
+#ifndef GENERICGRAPHS_H
+#define GENERICGRAPHS_H
+#include "../Graphs/GenericGraphs.h"
+#endif
+
 #ifndef LOGGINGSYSTEM_H
 #define LOGGINGSYSTEM_H
 #include "../loggingSystem.h"
@@ -31,6 +42,8 @@ private:
     menu *children;
     menu *parent;
     loggingSystem *log; // This represents a reference to the logging system of the program
+    GenericGraph *graphData;
+
     static const char *dataPath;
 
 public:
@@ -39,7 +52,7 @@ public:
     ~menu();
 
     static menuSet *ReadMenuSetFromFile(loggingSystem *);
-    static menu *InstantiateMenu(loggingSystem *);
+    static menu *InstantiateMenu(loggingSystem *, GenericGraph *);
 
     void PutMenu();
     void GetMenuCMD();
@@ -73,9 +86,15 @@ menu::menu(int _nameLength, char *_name, int _childrenSize, loggingSystem *_log)
 
     // Add a reference to the logging system of the program
     this->log = _log;
+
+    this->graphData = new GenericGraph();
 }
 menu::~menu()
 {
+    if (nameLength > 0)
+        delete[] name;
+    if (childrenSize > 0)
+        delete[] children;
 }
 
 menuSet *menu::ReadMenuSetFromFile(loggingSystem *log)
@@ -178,7 +197,7 @@ menuSet *menu::ReadMenuSetFromFile(loggingSystem *log)
     return set;
 }
 
-menu *menu::InstantiateMenu(loggingSystem *_log)
+menu *menu::InstantiateMenu(loggingSystem *_log, GenericGraph *_graph)
 {
     // Instantiate the menuSet data from the file, which will then be parsed into an object.
     menuSet *menuDataSet = menu::ReadMenuSetFromFile(_log);
@@ -200,6 +219,9 @@ menu *menu::InstantiateMenu(loggingSystem *_log)
     // Iterate the menus and link the children with the parents
     for (int i = 0; i < menuDataSet->size; i++)
     {
+        // Add the graph address to all the menus
+        _menu[i].graphData = _graph;
+
         int count = _menu[i].childrenSize;
         // The menu is or is not empty I.E. does execute a function or only opens a new submenu
         for (int j = 0; j < count; j++)
@@ -385,26 +407,46 @@ void menu::GetMenuCMD()
 
 void menu::ExecuteFunctionFromName()
 {
-    std::string _nameString = this->name;
-    std::map<std::string, MenuNames> _nameSwatch;
-    InitializeMenuNameMap(_nameSwatch);
+
+    std::string nameString = this->name;
+    std::map<std::string, MenuNames> nameSwatch;
+    InitializeMenuNameMap(nameSwatch);
     if (this->log->getDebug())
         std::cout << "DEBUG: "
-                  << _nameString
+                  << nameString
                   << std::endl
-                  << _nameSwatch[_nameString]
+                  << nameSwatch[nameString]
                   << std::endl;
 
-    switch (_nameSwatch[_nameString])
+    switch (nameSwatch[nameString])
     {
-    case Start_algorithm:
-        StartAlgorithm();
+    case Solve_algorithm:
+        this->graphData->Solve();
+        if (this->log->getClearConsole())
+            system("CLS");
+        if (this->graphData->isEmpty())
+        {
+            std::cout << "The graph has not yet been initialized. Continue with initializing the graph."
+                      << std::endl
+                      << "Press any key to continue...";
+            getch();
+            this->graphData->InitializeGraph(this->log);
+        }
+        this->graphData->Solve();
+        this->graphData->WriteGraphSolution();
+        getch();
         break;
     case Read_data:
-        ReadData();
+        this->graphData->InitializeGraph(this->log);
+        std::cout << "Data read successfully. Press any key to continue...";
+        getch();
         break;
     case Display_data:
-        DisplayData();
+        // if (this->graphData->isEmpty())
+        //     std::cout << "The graph has not yet been initialized.";
+        // else
+        this->graphData->DisplayGraphData();
+        getch();
         break;
     case Add_node:
         AddNode();
@@ -467,7 +509,7 @@ void menu::ExecuteFunctionFromName()
         exit(0);
     default:
         std::cout << "Default type name encountered:"
-                  << _nameSwatch[_nameString]
+                  << nameSwatch[nameString]
                   << std::endl;
         getch();
     }

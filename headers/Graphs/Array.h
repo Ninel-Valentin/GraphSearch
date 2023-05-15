@@ -8,6 +8,7 @@ private:
 public:
     Array();
     Array(int);
+    Array(int,int);
     ~Array();
     void resize(int);
     void set(int, int);
@@ -38,6 +39,16 @@ Array::Array(int _length)
         this->len = _length;
         for (int i = 0; i < this->len; i++)
             this->values[i] = 0;
+    }
+}
+Array::Array(int _length, int _startValue)
+{
+    if (_length > 0)
+    {
+        this->values = new int[_length];
+        this->len = _length;
+        for (int i = 0; i < this->len; i++)
+            this->values[i] = _startValue;
     }
 }
 Array::~Array()

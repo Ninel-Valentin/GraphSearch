@@ -6,32 +6,28 @@
 #include "headers/loggingSystem.h"
 #endif
 
-#ifndef GENERICGRAPH_H
-#define GENERICGRAPH_H
-#include "headers/Graphs/GenericGraphs.h"
-#endif
-
 #ifndef MENU_H
 #define MENU_H
 #include "headers/Menu/menu.h"
-#endif;
+#endif
 
 int main()
-{
+{    
     // logging system initialization
     loggingSystem *log = new loggingSystem();
-    log->setDebug(true);
+    // log->setDebug(true)E;
+
+    // Instantiate the graph of the application
+    GenericGraph *mainGraph = new GenericGraph();
 
     // menu tree initialization
-    // menu *mainMenu = menu::InstantiateMenu(log);
+    menu *mainMenu = menu::InstantiateMenu(log,mainGraph);
 
-    // // main loop
-    // mainMenu->GetMenuCMD();
+    // main loop
+    mainMenu->GetMenuCMD();
 
-    GenericGraph *graph = new GenericGraph();
-    graph->InitializeGraph(log);
-
-    graph->Solve();
+    delete log;
+    delete mainMenu;
 
     std::cout << "Press any key to close the console.";
     getch();

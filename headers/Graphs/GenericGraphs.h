@@ -15,12 +15,18 @@ class GenericGraph
     int src = 0;
     Array *nodes;
     int **edges;
+    Array
+        *predecessorArr,
+        *lengthArr;
 
 public:
     GenericGraph();
     ~GenericGraph();
+    bool isEmpty();
     void InitializeGraph(loggingSystem *);
-    void Solve(Array *, Array *);
+    void Solve();
+    void WriteGraphSolution();
+    void DisplayGraphData();
 };
 
 GenericGraph::GenericGraph()
@@ -35,7 +41,14 @@ GenericGraph::~GenericGraph()
             delete[] edges[i];
         delete[] edges;
         delete nodes;
+        delete[] predecessorArr;
+        delete[] lengthArr;
     }
+}
+
+bool GenericGraph::isEmpty()
+{
+    return this->nodes->length() == 0;
 }
 
 void GenericGraph::InitializeGraph(loggingSystem *log)
@@ -132,7 +145,7 @@ void GenericGraph::InitializeGraph(loggingSystem *log)
 }
 
 // This function provides the position array as the first param, and the length array as the second param
-void GenericGraph::Solve(Array *positionArr, Array *lengthArr)
+void GenericGraph::Solve()
 {
     int knownNodesIndex = 1,
         unknownNodesIndex = this->nodes->length() - 1,
@@ -146,10 +159,9 @@ void GenericGraph::Solve(Array *positionArr, Array *lengthArr)
           *unknownNodes = new Array(this->nodes->length()),
           *analyzedNodes = new Array();
 
-    delete[] lengthArr;
-    lengthArr = new Array(this->nodes->length());
-    delete[] positionArr;
-    positionArr = new Array(this->nodes->length()); // All values initialized with 0
+    // We do not delete this as this function always instantiates new arrays.
+    this->lengthArr = new Array(this->nodes->length(), -1);
+    this->predecessorArr = new Array(this->nodes->length(), -1); // All values initialized with 0
 
     // Starting from the source
     knownNodes->set(0, this->src);
@@ -174,8 +186,8 @@ void GenericGraph::Solve(Array *positionArr, Array *lengthArr)
                 {
                     knownNodes->add(y);
                     unknownNodes->removeByValue(y);
-                    positionArr->set(y, x);
-                    lengthArr->set(y, lengthArr->getValue(x) + 1);
+                    this->predecessorArr->set(y, x);
+                    this->lengthArr->set(y, this->lengthArr->getValue(x) + 1);
                 }
 
             knownNodes->removeByValue(x);
@@ -193,6 +205,88 @@ void GenericGraph::Solve(Array *positionArr, Array *lengthArr)
         analyzedNodes->sort();
         this->nodes->sort();
     }
+}
 
-    std::cout << "Finished!";
+void GenericGraph::WriteGraphSolution()
+{
+    std::cout << stringWithPadding("Solution data", 13, '-')
+              << std::endl
+              << "Source is: "
+              << this->src
+              << std::endl
+              << "\tNode\t|\tDistance(from source)\t|\tPath";
+
+    for (int i = 0; i < this->nodes->length(); i++)
+    {
+        std::cout << std::endl
+                  << "\t"
+                  << i
+                  << "\t|\t\t";
+        if (this->lengthArr->getValue(i) == -1)
+            std::cout << "No path";
+        else
+            std::cout << this->lengthArr->getValue(i);
+        std::cout << "\t\t|\t";
+
+        int crrIndex = this->predecessorArr->getValue(i);
+        if (crrIndex == i)
+            std::cout << "This is the source node "
+                      << this->src;
+        else if (crrIndex == -1)
+            std::cout << "No available path from source node "
+                      << this->src
+                      << " to "
+                      << i;
+        else
+        {
+            // Copy the predecessors in reverse order to another array.
+            int *reversedList = new int[this->predecessorArr->length()];
+            int k = 0;
+            while (crrIndex != this->src)
+            {
+                reversedList[k++] = crrIndex;
+                crrIndex = this->predecessorArr->getValue(crrIndex);
+            }
+            reversedList[k] = crrIndex;
+
+            for (; k >= 0; k--)
+                std::cout << reversedList[k]
+                          << "->";
+            std::cout << i;
+
+            delete[] reversedList;
+        }
+    }
+}
+
+void GenericGraph::DisplayGraphData()
+{
+    std::cout << stringWithPadding("Graph data", 10, '-')
+              << std::endl
+              << "Graph nodes ("
+              << this->nodes->length()
+              << " total nodes): ";
+    for (int i = 0; i < this->nodes->length(); i++)
+        std::cout << nodes->getValue(i)
+                  << " ";
+
+    // Get the count of the edges as this is not a stored value.
+    int edgesLength = 0;
+    for (int i = 0; i < this->nodes->length(); i++)
+        for (int j = 0; j < this->nodes->length(); j++)
+            if (this->edges[i][j])
+                edgesLength++;
+
+    std::cout << std::endl
+              << "Graph edges ("
+              << edgesLength
+              << " total edges): ";
+
+    for (int i = 0; i < this->nodes->length() - 1; i++)     // < len-1 I.E. Last row is not required for this check
+        for (int j = i + 1; j < this->nodes->length(); j++) // Start from i+1 I.E. above the main diagonal
+            if (this->edges[i][j])
+                std::cout << i
+                          << "->"
+                          << j
+                          << " ";
 }
