@@ -48,7 +48,7 @@ private:
 
 public:
     menu();
-    menu(int, char *, int, loggingSystem *);
+    menu(int, char *, int, loggingSystem *, GenericGraph *);
     ~menu();
 
     static menuSet *ReadMenuSetFromFile(loggingSystem *);
@@ -65,7 +65,7 @@ void AddChildrenIndexes(std::string, menuData &);
 menu::menu()
 {
 }
-menu::menu(int _nameLength, char *_name, int _childrenSize, loggingSystem *_log)
+menu::menu(int _nameLength, char *_name, int _childrenSize, loggingSystem *_log, GenericGraph *_graphData)
 {
     delete[] this->name;
     this->nameLength = _nameLength;
@@ -86,8 +86,7 @@ menu::menu(int _nameLength, char *_name, int _childrenSize, loggingSystem *_log)
 
     // Add a reference to the logging system of the program
     this->log = _log;
-
-    this->graphData = new GenericGraph();
+    this->graphData = _graphData;
 }
 menu::~menu()
 {
@@ -214,7 +213,7 @@ menu *menu::InstantiateMenu(loggingSystem *_log, GenericGraph *_graph)
 
     // Instantiate a menu for each entry
     for (int i = 0; i < menuDataSet->size; i++)
-        _menu[i] = *(new menu(menuDataSet->data[i].nameLength, menuDataSet->data[i].name, menuDataSet->data[i].childrenSize, _log));
+        _menu[i] = *(new menu(menuDataSet->data[i].nameLength, menuDataSet->data[i].name, menuDataSet->data[i].childrenSize, _log, _graph));
 
     // Iterate the menus and link the children with the parents
     for (int i = 0; i < menuDataSet->size; i++)
