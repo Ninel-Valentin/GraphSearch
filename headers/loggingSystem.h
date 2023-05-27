@@ -4,32 +4,27 @@
 class loggingSystem
 {
 private:
-    bool clearLog;
-    bool debug;
+    bool clearLog = true;
+    bool debug = false;
 
 public:
-#pragma region Constructors prototypes
     loggingSystem();
     loggingSystem(bool, bool);
     ~loggingSystem();
-#pragma endregion
-#pragma region Modifiers prototypes
+
     bool getDebug();
     void setDebug(bool);
     bool getClearConsole();
     void setClearConsole(bool);
-#pragma endregion
-#pragma region Functions prototypes
     void ClearConsole();
-#pragma endregion
+    static int paddingOfString(int, int);
+    static int paddingOfString(int);
+    static std::string stringWithPadding(const char *, int, char, bool);
+    static std::string stringWithPadding(const char *, int, char);
 };
 
-#pragma region Constructors definitions
 loggingSystem::loggingSystem()
 {
-    // Setting debug to false for default use-case
-    this->debug = false;
-
     std::cout << "Hello!" << std::endl;
 
     const char *q = "Would you like to erase the console after each message? (Y/N)";
@@ -50,8 +45,7 @@ loggingSystem::~loggingSystem()
         std::cout << "DEBUG: Logging system erased!" << std::endl;
     }
 }
-#pragma endregion
-#pragma region Modifiers definitions
+
 bool loggingSystem::getDebug()
 {
     return this->debug;
@@ -68,11 +62,41 @@ void loggingSystem::setClearConsole(bool _clearConsole)
 {
     this->clearLog = _clearConsole;
 }
-#pragma endregion
-#pragma region Functions definitions
+
 void loggingSystem::ClearConsole()
 {
     // This clears the console
     system("CLS");
 }
-#pragma endregion
+
+// This function takes as argument the length of the message it will add the padding to
+int paddingOfString(int strLength, int ignoreCount)
+{
+    return ((lineLength - strLength) / 2 - ignoreCount);
+}
+
+int paddingOfString(int strLength)
+{
+    return paddingOfString(strLength, 0);
+}
+
+std::string stringWithPadding(const char *str, int strLength, char filler, bool isSelected)
+{
+    if (isSelected)
+        return (std::string(paddingOfString(strLength + 6), filler) +
+                ">> " +
+                std::string(str) +
+                " <<" +
+                std::string(paddingOfString(strLength + 6), filler) +
+                "\n");
+    else
+        return (std::string(paddingOfString(strLength), filler) +
+                std::string(str) +
+                std::string(paddingOfString(strLength), filler) +
+                "\n");
+}
+
+std::string stringWithPadding(const char *str, int strLength, char filler)
+{
+    return stringWithPadding(str, strLength, filler, false);
+}

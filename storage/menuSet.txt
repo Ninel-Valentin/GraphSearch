@@ -1,19 +1,20 @@
-18
-Main menu>1|2|11|17|
-Start algorithm
-Graph data>3|4|5|10|
+19
+Main menu>1|2|11|18|
+Start
+Graph data>3|4|5|10|12|
 Read data
 Display data
-Modify data>6|7|8|9|
+Modify existent data>6|7|8|9|
 Add node
 Delete node
 Add link
 Delete link
 Erase data
-System>12|15|16|
-Change location of graph data>13|14|
+System>15|16|17|
+Change save location of graph data>13|14|
 Custom location
-Default location
+Restore default save location
 Toggle Debug
 Toggle console clear
+Help
 Exit

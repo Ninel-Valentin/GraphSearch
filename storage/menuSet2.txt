@@ -1,0 +1,24 @@
+23
+Main menu@4
+Start>0
+Graph data>0@7
+Read data>2
+Display data>2
+Modify existent data>2
+Add node>5
+Delete node>5
+Add edge>5
+Delete edge>5
+Erase data>2
+System>0
+Save data>2
+Load data>2@2
+Custom load location>13
+Load from presets>13
+Change save location of graph data>2@2
+Restore default save location>16
+Custom save location>16
+Toggle Debug>11
+Toggle console clear>11
+Help>11
+Exit>0

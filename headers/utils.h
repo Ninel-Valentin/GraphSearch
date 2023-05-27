@@ -1,11 +1,14 @@
 #include <map>
 #include <iostream>
 #include <conio.h>
-#include "MenuFunctions.h"
+#include "Menu/MenuFunctions.h"
+
+// Max line char for logging
+const int lineLength = 50;
 
 enum MenuNames
 {
-    Start_algorithm,
+    Solve_algorithm,
     Read_data,
     Display_data,
     Add_node,
@@ -17,10 +20,9 @@ enum MenuNames
     Default_location,
     Toggle_Debug,
     Toggle_console_clear,
+    Help,
     Exit
 };
-
-void InitializeMenuNameMap(std::map<std::string, MenuNames> &);
 
 bool GetQuestionAnswer(const char *question)
 {
@@ -30,7 +32,7 @@ bool GetQuestionAnswer(const char *question)
     // Repeat this step as long as the function does not return a value;
     while (true)
     {
-        char confirmation = getche();
+        char confirmation = getch();
         std::cout << std::endl
                   << std::flush;
 
@@ -48,7 +50,7 @@ bool GetQuestionAnswer(const char *question)
 
 void InitializeMenuNameMap(std::map<std::string, MenuNames> &_map)
 {
-    _map["Start algorithm"] = Start_algorithm;
+    _map["Start algorithm"] = Solve_algorithm;
     _map["Read data"] = Read_data;
     _map["Display data"] = Display_data;
     _map["Add node"] = Add_node;
@@ -60,5 +62,6 @@ void InitializeMenuNameMap(std::map<std::string, MenuNames> &_map)
     _map["Default location"] = Default_location;
     _map["Toggle Debug"] = Toggle_Debug;
     _map["Toggle console clear"] = Toggle_console_clear;
+    _map["Help"] = Help;
     _map["Exit"] = Exit;
 }

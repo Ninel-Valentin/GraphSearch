@@ -1,20 +1,5 @@
 #include <iostream>
 
-void StartAlgorithm()
-{
-    std::cout << "Started algorithm"
-              << std::endl;
-}
-void ReadData()
-{
-    std::cout << "Read data"
-              << std::endl;
-}
-void DisplayData()
-{
-    std::cout << "Display data"
-              << std::endl;
-}
 void AddNode()
 {
     std::cout << "Add node"
@@ -48,15 +33,5 @@ void CustomLocation()
 void DefaultLocation()
 {
     std::cout << "Default location"
-              << std::endl;
-}
-void ToggleDebug()
-{
-    std::cout << "Toggle debug"
-              << std::endl;
-}
-void ToggleConsoleClear()
-{
-    std::cout << "Toggle console clear"
               << std::endl;
 }

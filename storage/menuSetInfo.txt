@@ -1,9 +1,0 @@
-Main menu -> Start:Graph data:System:Exit
-    Start
-    Graph data -> Display data:Modify data:Erase data:Change location
-        Modify data -> Modify nodes:Modify links
-            "display nodes and links"
-            Modify nodes -> Add node/Delete node
-            Modify links -> Add link/Delete link
-    System -> Enable/Disable Debug:Enable/Disable console clear
-    Exit
