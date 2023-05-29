@@ -19,8 +19,10 @@ public:
     void ClearConsole();
     static int paddingOfString(int, int);
     static int paddingOfString(int);
-    static std::string stringWithPadding(const char *, int, char, bool);
-    static std::string stringWithPadding(const char *, int, char);
+    // static std::string stringWithPadding(const char *, int, char, bool);
+    // static std::string stringWithPadding(const char *, int, char);
+    static void stringWithPadding(const char *, int, char, bool);
+    static void stringWithPadding(const char *, int, char);
 };
 
 loggingSystem::loggingSystem()
@@ -80,23 +82,29 @@ int paddingOfString(int strLength)
     return paddingOfString(strLength, 0);
 }
 
-std::string stringWithPadding(const char *str, int strLength, char filler, bool isSelected)
+// This function logs in the console the str array with a filler arround to match a certain size, can be selected to also show the name between arrows ">> str <<"
+void ShowStringWithPadding(const char *str, int strLen, char filler, bool isSelected)
 {
+    int repeatCount;
     if (isSelected)
-        return (std::string(paddingOfString(strLength + 6), filler) +
-                ">> " +
-                std::string(str) +
-                " <<" +
-                std::string(paddingOfString(strLength + 6), filler) +
-                "\n");
+        // + 6 because when selected there are the arrows on both side ">> " & " <<" -> 3 chars on each side
+        repeatCount = paddingOfString(strLen + 6);
     else
-        return (std::string(paddingOfString(strLength), filler) +
-                std::string(str) +
-                std::string(paddingOfString(strLength), filler) +
-                "\n");
+        repeatCount = paddingOfString(strLen);
+
+    for (int i = 0; i < repeatCount; i++)
+        std::cout << filler;
+    if (isSelected)
+        std::cout << ">> " << str << " <<";
+    else
+        std::cout << str;
+    for (int i = 0; i < repeatCount; i++)
+        std::cout << filler;
+    std::cout << std::endl;
 }
 
-std::string stringWithPadding(const char *str, int strLength, char filler)
+// This function logs in the console the str array with a filler arround to match a certain size
+void ShowStringWithPadding(const char *str, int strLen, char filler)
 {
-    return stringWithPadding(str, strLength, filler, false);
+    ShowStringWithPadding(str, strLen, filler, false);
 }

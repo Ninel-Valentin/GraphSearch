@@ -15,13 +15,13 @@ int main()
 {    
     // logging system initialization
     loggingSystem *log = new loggingSystem();
-    // log->setDebug(true)E;
+    // log->setDebug(true);
 
     // Instantiate the graph of the application
     GenericGraph *mainGraph = new GenericGraph();
 
     // menu tree initialization
-    menu *mainMenu = menu::InstantiateMenu(log,mainGraph);
+    menu *mainMenu =  menu::InstantiateMenu(log,mainGraph);
 
     // main loop
     mainMenu->GetMenuCMD();
