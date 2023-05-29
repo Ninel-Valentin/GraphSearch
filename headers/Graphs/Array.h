@@ -8,11 +8,12 @@ private:
 public:
     Array();
     Array(int);
-    Array(int,int);
+    Array(int, int);
     ~Array();
     void resize(int);
     void set(int, int);
     int getValue(int);
+    // This function returns the index of the provided value or -1 if the value is not in the array.
     int getIndex(int);
     void add(int);
     void add(int, int);
@@ -105,7 +106,6 @@ int Array::getValue(int _index)
     return -1;
 }
 
-// This function returns the index of the provided value or -1 if the value is not in the array.
 int Array::getIndex(int _value)
 {
     for (int i = 0; i < this->len; i++)
