@@ -27,8 +27,6 @@ public:
 
 loggingSystem::loggingSystem()
 {
-    std::cout << "Hello!" << std::endl;
-
     const char *q = "Would you like to erase the console after each message? (Y/N)";
     this->clearLog = GetQuestionAnswer(q);
     if (clearLog)
