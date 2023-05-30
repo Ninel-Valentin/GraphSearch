@@ -44,6 +44,11 @@ int main()
         delete log;
         delete mainMenu;
     }
+    else
+    {
+        std::cout << "You could not log in. The program will exit now..."
+                  << std::endl;
+    }
 
     std::cout << "Press any key to close the console.";
     getch();

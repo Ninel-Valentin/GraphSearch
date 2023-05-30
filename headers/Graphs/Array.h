@@ -24,7 +24,9 @@ public:
     void add(int, int);
     // This function adds the value provided at the index provided and checks for duplicates if required
     void add(int, int, bool);
+    // This function removes and returns the first entry of the array. Returns -1 if the array is empty
     int fifo();
+    // This function removes and returns the last entry of the array. Returns -1 if the array is empty
     int filo();
     int first();
     int last();
@@ -152,7 +154,6 @@ void Array::add(int _value, int _index, bool _checkForDuplicate)
     delete[] temp;
 }
 
-// This function removes and returns the first entry of the array. Returns -1 if the array is empty
 int Array::fifo()
 {
     if (this->len > 0)
@@ -172,7 +173,6 @@ int Array::fifo()
     return -1;
 }
 
-// This function removes and returns the last entry of the array. Returns -1 if the array is empty
 int Array::filo()
 {
     if (this->len > 0)
