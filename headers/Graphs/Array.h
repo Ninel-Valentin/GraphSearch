@@ -10,24 +10,33 @@ public:
     Array(int);
     Array(int, int);
     ~Array();
+    // This function resizes the array and where there are empty slots, adds the value 0
     void resize(int);
+    // This function sets the value at the index
     void set(int, int);
+    // This function returns the value of the provided index or -1 if the index is out of bounds
     int getValue(int);
     // This function returns the index of the provided value or -1 if the value is not in the array.
     int getIndex(int);
+    // This function adds the value provided at the end of the Array
     void add(int);
+    // This function adds the value provided at the index provided
     void add(int, int);
+    // This function adds the value provided at the index provided and checks for duplicates if required
     void add(int, int, bool);
     int fifo();
     int filo();
     int first();
     int last();
     int length();
+    // This function sorts the Array in Ascending order
     void sort();
+    // This function sorts the Array in Ascending/Descending (true/false) order
     void sort(bool);
+    // This function removes the first encounter of the value from the Array
     void removeByValue(int);
+    // This function removes the value stored at the index from the Array
     void removeByIndex(int);
-    // int &operator[](int);
     friend bool operator!=(const Array &, const Array &);
     friend bool operator==(const Array &, const Array &);
 };
@@ -246,15 +255,6 @@ void Array::removeByIndex(int _index)
         delete[] temp;
     }
 }
-
-// int &Array::operator[](int i)
-// {
-//     if (i <= this->len){
-//         return this->values[i];
-//     }
-//     else
-//         exit(1);
-// }
 
 bool operator!=(const Array &_a, const Array &_b)
 {

@@ -12,16 +12,22 @@ public:
     loggingSystem(bool, bool);
     ~loggingSystem();
 
+    // Get the debug value
     bool getDebug();
+    // Toggle the debug logs
     void setDebug(bool);
+    // Get the clear console value
     bool getClearConsole();
+    // Toggle the clear console after each message
     void setClearConsole(bool);
     void ClearConsole();
+    // This function takes as argument the length of the message it will add the padding to and the length of ignored characters into the padding
     static int paddingOfString(int, int);
+    // This function takes as argument the length of the message it will add the padding to
     static int paddingOfString(int);
-    // static std::string stringWithPadding(const char *, int, char, bool);
-    // static std::string stringWithPadding(const char *, int, char);
+    // This function logs in the console the str array with a filler arround to match a certain size, can be selected to also show the name between arrows ">> str <<"
     static void stringWithPadding(const char *, int, char, bool);
+    // This function logs in the console the str array with a filler arround to match a certain size
     static void stringWithPadding(const char *, int, char);
 };
 
@@ -69,7 +75,6 @@ void loggingSystem::ClearConsole()
     system("CLS");
 }
 
-// This function takes as argument the length of the message it will add the padding to
 int paddingOfString(int strLength, int ignoreCount)
 {
     return ((lineLength - strLength) / 2 - ignoreCount);
@@ -80,7 +85,6 @@ int paddingOfString(int strLength)
     return paddingOfString(strLength, 0);
 }
 
-// This function logs in the console the str array with a filler arround to match a certain size, can be selected to also show the name between arrows ">> str <<"
 void ShowStringWithPadding(const char *str, int strLen, char filler, bool isSelected)
 {
     int repeatCount;
@@ -101,7 +105,6 @@ void ShowStringWithPadding(const char *str, int strLen, char filler, bool isSele
     std::cout << std::endl;
 }
 
-// This function logs in the console the str array with a filler arround to match a certain size
 void ShowStringWithPadding(const char *str, int strLen, char filler)
 {
     ShowStringWithPadding(str, strLen, filler, false);

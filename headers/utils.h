@@ -11,6 +11,7 @@ const int samplesCount = 4;
 // * Path of the password container
 const char *passwordPath = "storage/password.txt";
 
+// This function asks for the provided question and waits for the response Y/N to be pressed. Not case sensitive
 bool GetQuestionAnswer(const char *question)
 {
     // Show the question
@@ -40,6 +41,7 @@ bool GetQuestionAnswer(const char *question)
     }
 }
 
+// The function reads the password
 char *ReadPassword(int &passLen)
 {
     std::cout << "Welcome to the Graph Search application!"
@@ -91,6 +93,8 @@ char *ReadPassword(int &passLen)
     return password;
 }
 
+
+// This function encodes a char array
 char *encodePassword(char *password, int passLen)
 {
     char *encodedPass = new char[passLen * 3 + 1]{};
@@ -127,6 +131,7 @@ char *encodePassword(char *password, int passLen)
     return encodedPass;
 }
 
+// This function decodes a char array
 char *decodePassword(char *encodedPass, int passLen)
 {
     char *decodedPass = new char[passLen / 3 + 1]{};
@@ -147,6 +152,7 @@ char *decodePassword(char *encodedPass, int passLen)
     return decodedPass;
 }
 
+// This function checks if the provided password by the ReadPassword function is correct
 bool CheckForPassword()
 {
     int passLen;

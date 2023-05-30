@@ -26,26 +26,45 @@ private:
 public:
     GenericGraph();
     ~GenericGraph();
+    // Check weather the graph has or does not have data in it
     bool isEmpty();
+    // Initialize the Graph object
     void InitializeGraph(loggingSystem *);
     // This function provides the position array as the first param, and the length array as the second param
     void Solve();
+    // Display the graph solution data based on predecessorArr and lenthArr
     void WriteGraphSolution();
+    // Display the graph source, nodes and edges
     void DisplayGraphData();
+    // Display the graph source and nodes
     void DisplayNodesData(bool);
+    // Display the graph edges
     void DisplayEdgesData(bool);
+    // Add a new node to the graph
     void AddNode();
+    // Delete a node from the graph (!Keep in mind that removing a node, will shift all the larger nodes as value, 1 value to the left I.E. Removing 2 from 1 2 3 4 will result into 1 2 3)
     void DeleteNode();
+    // Add a new edge to the graph
     void AddEdge();
+    // Delete an edge from the graph
     void DeleteEdge();
+    // Show the menu of possible presets
     void ShowPresetMenu();
+    // Get the preset menu and listen for a selection on it
     void GetPresetMenu();
+    // Load the graph with data from an array
     void LoadFromData(int *, int);
+    // Load the graph with data from the path
     void LoadDataFromPath(char *);
+    // Load the graph with data from a custom path inserted through the console
     void LoadDataFromCustomPath();
+    // Create a data array from the graph data
     int *CreateDataSet(int &);
+    // Save the graph data into the defaul/custom location
     void SaveData();
+    // Set a custom save location
     void SetCustomSaveLocation();
+    // Use the default save location instead of the custom one
     void RestoreDefaultSaveLocation();
     static const char *presetPath;
     static const char *defaultSavePath;
